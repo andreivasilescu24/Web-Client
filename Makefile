@@ -1,4 +1,4 @@
-client:
+build:
 	g++ client.cpp requests.cpp helpers.cpp buffer.cpp -o client
 	
 run:

@@ -58,11 +58,11 @@ char *compute_post_request(char *host, char *url, char* content_type, nlohmann::
     sprintf(line, "Content-Length: %d\n", message_content.dump().length());
     compute_message(message, line);
     // Step 4 (optional): add cookies
-    // if (cookies != NULL) {
+    if (cookies != NULL) {
        
-    // }
+    }
     // Step 5: add new line at end of header
-    strcpy(body_data_buffer, message_content.dump().c_str());
+    sprintf(body_data_buffer, "%s", message_content.dump().c_str());
 
     // Step 6: add the actual payload data
     memset(line, 0, LINELEN);
