@@ -42,7 +42,7 @@ char *compute_get_request(char *host, char *url,
     return message;
 }
 
-char *compute_post_request(char *host, char *url, char* content_type, nlohmann::json message_content, char **cookies, int cookies_count)
+char *compute_post_request(char *host, char *url, char* content_type, nlohmann::json message_content, char *login_token, char* JWT)
 {
     char *message = (char*) calloc(BUFLEN, sizeof(char));
     char *line = (char*) calloc(LINELEN, sizeof(char));
@@ -62,14 +62,21 @@ char *compute_post_request(char *host, char *url, char* content_type, nlohmann::
     sprintf(line, "Content-Type: %s", content_type);
     compute_message(message, line);
 
-    sprintf(line, "Content-Length: %d\n", message_content.dump().length());
+    sprintf(line, "Content-Length: %d", message_content.dump().length());
     compute_message(message, line);
     // Step 4 (optional): add cookies
-    if (cookies != NULL) {
-       
+    if(login_token) {
+        sprintf(line, "Cookie: %s", login_token);
+        compute_message(message, line);
     }
+
+    if(JWT) {
+        sprintf(line, "Authorization: Bearer %s", JWT);
+        compute_message(message, line);
+    }
+    
     // Step 5: add new line at end of header
-    sprintf(body_data_buffer, "%s", message_content.dump().c_str());
+    sprintf(body_data_buffer, "\n%s", message_content.dump().c_str());
 
     // Step 6: add the actual payload data
     memset(line, 0, LINELEN);
@@ -77,6 +84,33 @@ char *compute_post_request(char *host, char *url, char* content_type, nlohmann::
 
     free(line);
     free(body_data_buffer);
+
+    return message;
+}
+
+char* compute_delete_request(char* host, char* url, char* login_token, char* JWT) {
+    char *message = (char*) calloc(BUFLEN, sizeof(char));
+    char *line = (char*) calloc(LINELEN, sizeof(char));
+
+    sprintf(line, "DELETE %s HTTP/1.1", url);
+    compute_message(message, line);
+
+    sprintf(line, "Host: %s", host);
+    compute_message(message, line);
+
+    if (login_token != NULL) {
+        sprintf(line, "Cookie: %s", login_token);
+        compute_message(message, line);
+    }
+
+    if(JWT != NULL) {
+        sprintf(line, "Authorization: Bearer %s", JWT);
+        compute_message(message, line);
+    }
+
+    compute_message(message, "");
+
+    free(line);
 
     return message;
 }

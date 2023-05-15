@@ -4,12 +4,12 @@
 #include "nlohmann/json.hpp"
 #include "nlohmann/json_fwd.hpp"
 
-// computes and returns a GET request string (query_params
-// and cookies can be set to NULL if not needed)
 char *compute_get_request(char *host, char *url,
-                            char *cookies, char* JWT);
+                            char *login_token, char* JWT);
 
-// computes and returns a POST request string (cookies can be NULL if not needed)
-char *compute_post_request(char *host, char *url, char* content_type, nlohmann::json message_content, char **cookies, int cookies_count);
+char *compute_post_request(char *host, char *url, char* content_type, 
+                            nlohmann::json message_content, char *login_token, char* JWT);
+
+char* compute_delete_request(char* host, char* url, char* login_token, char* JWT);
 
 #endif
