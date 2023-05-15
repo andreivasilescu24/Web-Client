@@ -10,25 +10,32 @@
 #include "requests.h"
 #include <string>
 
-char *compute_get_request(char *host, char *url, char *query_params,
-                            char **cookies, int cookies_count)
+char *compute_get_request(char *host, char *url,
+                            char *login_token, char *JWT)
 {
     char *message = (char*) calloc(BUFLEN, sizeof(char));
     char *line = (char*) calloc(LINELEN, sizeof(char));
 
     // Step 1: write the method name, URL, request params (if any) and protocol type
-    if (query_params != NULL) {
-        sprintf(line, "GET %s?%s HTTP/1.1", url, query_params);
-    } else {
-        sprintf(line, "GET %s HTTP/1.1", url);
-    }
+    sprintf(line, "GET %s HTTP/1.1", url);
 
     compute_message(message, line);
 
     // Step 2: add the host
+    sprintf(line, "Host: %s", host);
+    compute_message(message, line);
+
+    // sprintf(line, "Content-Type: %s", content_type);
+    // compute_message(message, line);
     // Step 3 (optional): add headers and/or cookies, according to the protocol format
-    if (cookies != NULL) {
-       
+    if (login_token != NULL) {
+        sprintf(line, "Cookie: %s", login_token);
+        compute_message(message, line);
+    }
+
+    if(JWT != NULL) {
+        sprintf(line, "Authorization: Bearer %s", JWT);
+        compute_message(message, line);
     }
     // Step 4: add final new line
     compute_message(message, "");
